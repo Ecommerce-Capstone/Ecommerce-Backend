@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/users/login").permitAll()
                         .requestMatchers(new IpMatcher(SERVICE_IP)).permitAll()
                         .requestMatchers(HttpMethod.POST ,"/users").anonymous()
                         .requestMatchers(HttpMethod.GET, "/users").hasRole("admin")
