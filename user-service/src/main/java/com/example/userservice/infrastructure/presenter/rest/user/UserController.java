@@ -47,6 +47,7 @@ public class UserController {
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user){
         log.info("POST /users called with body: {}", user);
         Response response = new Response();
+        user.setRole("customer");
         user = userUseCase.saveUser(user);
         response.setData(userUseCase.castToUserSafe(user));
         response.setHttpCode(201);
@@ -62,6 +63,7 @@ public class UserController {
         }
 
         Response response = new Response();
+        user.setRole("customer");
         user = userUseCase.saveUser(id, user);
         response.setData(userUseCase.castToUserSafe(user));
         return response.getResponse();
