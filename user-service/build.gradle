@@ -27,7 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     compileOnly 'org.projectlombok:lombok'
-    compileOnly 'javax.xml.bind:jaxb-api:2.1'
+    implementation 'javax.xml.bind:jaxb-api:2.1'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.jeasy:easy-random-core:5.0.0'
