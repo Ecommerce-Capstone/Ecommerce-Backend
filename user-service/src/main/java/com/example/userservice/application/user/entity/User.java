@@ -22,10 +22,8 @@ public class User {
     @NotEmpty(message = "Email is required")
     @Email
     private String email;
-    @NotEmpty(message = "Photo is required")
     private String photo;
     private String role;
-    @NotEmpty(message = "Address is required")
     private String address;
     private Date createdAt;
     private Date updatedAt;
