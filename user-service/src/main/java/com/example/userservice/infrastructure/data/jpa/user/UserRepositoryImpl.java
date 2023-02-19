@@ -21,25 +21,13 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> findAll() {
         List<UserEntity> userEntities = jpaUserRepository.findAll();
-        List<User> users = new ArrayList<>();
-        for (UserEntity userEntity: userEntities){
-            User user = new User();
-            BeanUtils.copyProperties(userEntity, user);
-            users.add(user);
-        }
-        return users;
+        return this.castUserEntityToUser(userEntities);
     }
 
     @Override
     public Page<User> findAll(Pageable pageable) {
         Page<UserEntity> userEntities = jpaUserRepository.findAll(pageable);
-        List<User> users = new ArrayList<>();
-        for (UserEntity userEntity: userEntities.getContent()){
-            User user = new User();
-            BeanUtils.copyProperties(userEntity, user);
-            users.add(user);
-        }
-        return new PageImpl<>(users, pageable, userEntities.getTotalElements());
+        return this.castUserEntityToUser(userEntities, pageable);
     }
 
     @Override
@@ -78,5 +66,31 @@ public class UserRepositoryImpl implements UserRepository {
         this.findById(id);
         jpaUserRepository.deleteById(id);
         return true;
+    }
+
+    @Override
+    public List<User> findAll(List<Long> ids) {
+        List<UserEntity> userEntities = jpaUserRepository.findAllByIdIn(ids);
+        return this.castUserEntityToUser(userEntities);
+    }
+
+    private List<User> castUserEntityToUser(List<UserEntity> userEntities){
+        List<User> users = new ArrayList<>();
+        for (UserEntity userEntity: userEntities){
+            User user = new User();
+            BeanUtils.copyProperties(userEntity, user);
+            users.add(user);
+        }
+        return users;
+    }
+
+    private Page<User> castUserEntityToUser(Page<UserEntity> userEntities, Pageable pageable){
+        List<User> users = new ArrayList<>();
+        for (UserEntity userEntity: userEntities.getContent()){
+            User user = new User();
+            BeanUtils.copyProperties(userEntity, user);
+            users.add(user);
+        }
+        return new PageImpl<>(users, pageable, userEntities.getTotalElements());
     }
 }

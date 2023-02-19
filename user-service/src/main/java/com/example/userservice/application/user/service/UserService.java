@@ -95,6 +95,12 @@ public class UserService implements UserUseCase {
         userRepository.deleteById(id);
         return true;
     }
+
+    @Override
+    public List<User> getUsers(List<Long> ids) {
+        return userRepository.findAll(ids);
+    }
+
     private String hashPassword(String plainText){
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder.encode(plainText);

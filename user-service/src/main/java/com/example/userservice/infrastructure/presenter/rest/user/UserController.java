@@ -15,6 +15,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -22,9 +25,23 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserUseCase userUseCase;
     @GetMapping
-    public ResponseEntity<Object> getUsers(@RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "10") Integer size){
+    public ResponseEntity<Object> getUsers(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false) String ids
+    ){
         log.info("GET /users called with param page: {}, size: {}", page, size);
         Response response = new Response();
+        if (ids != null){
+            String[] split = ids.split(",");
+            List<Long> convertedIds = new ArrayList<>();
+            for (String s: split){
+                convertedIds.add(Long.valueOf(s));
+            }
+            List<User> users = userUseCase.getUsers(convertedIds);
+            response.setData(users);
+            return response.getResponse();
+        }
         Page<User> users = userUseCase.getUsers(page, size);
         response.setPageData(userUseCase.castToUserSafe(users));
         return response.getResponse();

@@ -13,4 +13,5 @@ public interface UserRepository {
     User findUserByUsername(String username);
     User save(User user);
     boolean deleteById(Long id);
+    List<User> findAll(List<Long> ids);
 }
