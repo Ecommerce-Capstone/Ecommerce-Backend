@@ -10,6 +10,5 @@ public interface CartUseCase {
     Cart saveCart(Cart cart);
     Cart saveCart(Long id, Cart cart);
     boolean deleteCartById(Long id);
-
     void deleteCartByUserId(Long userId);
 }
