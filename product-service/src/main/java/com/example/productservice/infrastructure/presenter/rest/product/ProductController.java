@@ -29,10 +29,21 @@ public class ProductController {
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "") String search,
             @RequestParam(required = false, defaultValue = "created_at,desc") String sort,
-            @RequestParam(required = false) Long categoryId
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String ids
     ){
         log.info("GET /products called");
         Response response = new Response();
+        if (ids != null){
+            String[] split = ids.split(",");
+            List<Long> convertedIds = new ArrayList<>();
+            for (String s: split){
+                convertedIds.add(Long.valueOf(s));
+            }
+            List<Product> products = productUseCase.getProduct(convertedIds);
+            response.setData(products);
+            return response.getResponse();
+        }
         String[] sortCriteria = sort.split(",");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Objects.equals(sortCriteria[1], "asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortCriteria[0]));
 
@@ -80,20 +91,6 @@ public class ProductController {
         Response response = new Response();
         productUseCase.deleteProductById(id);
         response.setHttpCode(204);
-        return response.getResponse();
-    }
-
-    @GetMapping(path = "/mass")
-    public ResponseEntity<Object> getProductsByIds(@RequestParam String ids){
-        log.info("GET /product/mass/{} called", ids);
-        Response response = new Response();
-        String[] split = ids.split(",");
-        List<Long> convertedIds = new ArrayList<>();
-        for (String s: split){
-            convertedIds.add(Long.valueOf(s));
-        }
-        List<Product> products = productUseCase.getProduct(convertedIds);
-        response.setData(products);
         return response.getResponse();
     }
 }
