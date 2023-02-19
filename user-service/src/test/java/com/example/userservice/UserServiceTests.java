@@ -24,28 +24,8 @@ class UserServiceTests {
     UserRepository userRepository;
     @InjectMocks
     UserService userService;
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("john");
-        user.setPassword("password");
-    }
-//    @Test
-//    public void getUsers_ShouldReturnListOfUsers() {
-//        List<User> users = new ArrayList<>();
-//        users.add(new User(1L, "John", "1234", "jhon do", "email@gmail.com", null, "user", "jakarta", null, null, null));
-//
-//        when(userRepository.findAll()).thenReturn(users);
-//
-//        List<User> actualUsers = userService.getUsers();
-//
-//        assertEquals(users, actualUsers);
-//    }
-
     @Test
-    public void getUsers_WhenUsersExist_ShouldReturnListOfProduct() {
+    public void getUsers_WhenUsersExist_ShouldReturnListOfUsers() {
         EasyRandom easyRandom = new EasyRandom();
         // Given
         List<User> expectedUsers = new ArrayList<>();

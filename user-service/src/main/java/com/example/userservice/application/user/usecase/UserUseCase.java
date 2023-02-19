@@ -17,5 +17,6 @@ public interface UserUseCase {
     Page<UserSafe> castToUserSafe(Page<User> users);
     UserSafe castToUserSafe(User user);
     boolean deleteUserById(Long id);
+    List<User> getUsers(List<Long> ids);
 
 }
