@@ -4,6 +4,9 @@ import com.example.orderservice.application.order.entity.Order;
 import com.example.orderservice.application.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -19,13 +22,19 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public List<Order> findAll() {
         List<OrderEntity> orderEntities = (List<OrderEntity>) jpaOrderRepository.findAll();
-        List<Order> Order = new ArrayList<>();
-        for (OrderEntity orderEntity : orderEntities){
-            Order order = new Order();
-            BeanUtils.copyProperties(orderEntity, order);
-            Order.add(order);
-        }
-        return Order;
+        return this.castOrderEntityToOrder(orderEntities);
+    }
+
+    @Override
+    public Page<Order> findAll(Pageable pageable) {
+        Page<OrderEntity> orderEntities = jpaOrderRepository.findAll(pageable);
+        return this.castOrderEntityToOrder(orderEntities, pageable);
+    }
+
+    @Override
+    public Page<Order> findAll(Pageable pageable, Long userId) {
+        Page<OrderEntity> orderEntities = jpaOrderRepository.findAllByUserId(userId, pageable);
+        return this.castOrderEntityToOrder(orderEntities, pageable);
     }
 
     @Override
@@ -52,6 +61,26 @@ public class OrderRepositoryImpl implements OrderRepository {
     public boolean deleteById(Long id) {
         jpaOrderRepository.deleteById(id);
         return true;
+    }
+
+    private List<Order> castOrderEntityToOrder(List<OrderEntity> orderEntities){
+        List<Order> orders = new ArrayList<>();
+        for (OrderEntity orderEntity : orderEntities){
+            Order order = new Order();
+            BeanUtils.copyProperties(orderEntity, order);
+            orders.add(order);
+        }
+        return orders;
+    }
+
+    private Page<Order> castOrderEntityToOrder(Page<OrderEntity> orderEntities, Pageable pageable){
+        List<Order> orders = new ArrayList<>();
+        for (OrderEntity orderEntity : orderEntities.getContent()){
+            Order order = new Order();
+            BeanUtils.copyProperties(orderEntity, order);
+            orders.add(order);
+        }
+        return new PageImpl<>(orders, pageable, orderEntities.getTotalElements());
     }
 
 }

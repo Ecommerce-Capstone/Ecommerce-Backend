@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +41,11 @@ public class OrderService implements OrderUseCase {
 
     @Override
     public Page<Order> getOrders(Pageable pageable) {
-        return null;
+        return orderRepository.findAll(pageable);
+    }
+    @Override
+    public Page<Order> getOrders(Pageable pageable, Long userId) {
+        return orderRepository.findAll(pageable, userId);
     }
 
     @Override

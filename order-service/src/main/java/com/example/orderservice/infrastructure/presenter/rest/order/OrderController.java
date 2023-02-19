@@ -14,6 +14,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,11 +33,16 @@ public class OrderController {
     private final OrderUseCase orderUseCase;
     private final OrderItemUseCase orderItemUseCase;
     @GetMapping
-    public ResponseEntity<Object> getOrder(){
+    public ResponseEntity<Object> getOrder(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false) Long userId
+    ){
         log.info("GET /order called");
         Response response = new Response();
-        List<Order> order = orderUseCase.getOrders();
-        response.setData(order);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Order> orders = userId == null ? orderUseCase.getOrders(pageable) : orderUseCase.getOrders(pageable, userId);
+        response.setPageData(orders);
         return response.getResponse();
     }
     @GetMapping(path = "/{id}")
