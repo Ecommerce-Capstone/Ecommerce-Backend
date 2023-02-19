@@ -44,9 +44,9 @@ public class Response {
         }
 
         Map<String, Object> page = new HashMap<String, Object>();
-        page.put("number_element", data.getNumberOfElements());
-        page.put("total_pages", data.getTotalPages());
-        page.put("total_elements", data.getTotalElements());
+        page.put("numberElement", data.getNumberOfElements());
+        page.put("totalPages", data.getTotalPages());
+        page.put("totalElements", data.getTotalElements());
         page.put("last", data.isLast());
         page.put("size", data.getSize());
         page.put("page", data.getNumber());

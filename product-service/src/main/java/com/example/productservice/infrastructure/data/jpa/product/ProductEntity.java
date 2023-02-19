@@ -31,6 +31,8 @@ public class ProductEntity {
     private String description;
     @Column(name = "images")
     private String images;
+    @Column(name = "category_id")
+    private Long categoryId;
     @CreatedDate
     @Column(name = "created_at")
     private Date createdAt;
@@ -39,8 +41,4 @@ public class ProductEntity {
     private Date updatedAt;
     @Column(name = "deleted_at")
     private Date deletedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private ProductCategoryEntity category;
 }

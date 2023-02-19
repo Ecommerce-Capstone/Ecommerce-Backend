@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/products")
@@ -26,32 +27,23 @@ public class ProductController {
     public ResponseEntity<Object> getProduct(
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String sort,
+            @RequestParam(required = false, defaultValue = "") String search,
+            @RequestParam(required = false, defaultValue = "created_at,desc") String sort,
             @RequestParam(required = false) Long categoryId
     ){
         log.info("GET /products called");
         Response response = new Response();
-        Pageable pageable;
-        if (sort == null){
-            pageable = PageRequest.of(page, size);
-        } else {
-            String[] sortCriteria = sort.split(",");
-            pageable = PageRequest.of(page, size, Sort.by(sortCriteria[1] == "asc" ? Sort.Direction.ASC : Sort.Direction.DESC, sortCriteria[0]));
-        }
+        String[] sortCriteria = sort.split(",");
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Objects.equals(sortCriteria[1], "asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortCriteria[0]));
 
         Page<Product> products;
         if (search != null && categoryId != null){
-            System.out.println("search & category");
             products = productUseCase.getProduct(pageable, search, categoryId);
         } else if (search != null){
-            System.out.println("search");
             products = productUseCase.getProduct(pageable, search);
         } else if (categoryId != null){
-            System.out.println("category");
             products = productUseCase.getProduct(pageable, categoryId);
         } else {
-            System.out.println("none");
             products = productUseCase.getProduct(pageable);
         }
         response.setPageData(products);
