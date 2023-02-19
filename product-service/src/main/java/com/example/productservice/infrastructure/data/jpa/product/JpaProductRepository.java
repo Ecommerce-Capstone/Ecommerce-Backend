@@ -10,11 +10,11 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface JpaProductRepository extends JpaRepository<ProductEntity, Long> {
-    @Query(value = "SELECT * FROM product WHERE product.id IN (SELECT id FROM product WHERE name LIKE %?1% OR description LIKE %?1%) AND category_id = ?2", nativeQuery = true)
+    @Query(value = "SELECT * FROM products WHERE products.id IN (SELECT id FROM products WHERE name LIKE %?1% OR description LIKE %?1%) AND category_id = ?2", nativeQuery = true)
     Page<ProductEntity> getProductBySearchQueryAndCategory(String search, Long categoryId, Pageable pageable);
-    @Query(value = "SELECT * FROM product WHERE product.id IN (SELECT id FROM product WHERE name LIKE %?1% OR description LIKE %?1%)", nativeQuery = true)
+    @Query(value = "SELECT * FROM products WHERE products.id IN (SELECT id FROM products WHERE name LIKE %?1% OR description LIKE %?1%)", nativeQuery = true)
     Page<ProductEntity> getProductBySearchQuery(String search, Pageable pageable);
-    @Query(value = "SELECT * FROM product WHERE category_id = ?1", nativeQuery = true)
+    @Query(value = "SELECT * FROM products WHERE category_id = ?1", nativeQuery = true)
     Page<ProductEntity> getProductByCategory(Long categoryId, Pageable pageable);
     List<ProductEntity> findAllByIdIn(List<Long> ids);
 }

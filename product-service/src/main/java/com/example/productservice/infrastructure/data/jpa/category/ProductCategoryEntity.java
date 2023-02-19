@@ -1,5 +1,6 @@
 package com.example.productservice.infrastructure.data.jpa.category;
 
+import com.example.productservice.infrastructure.data.jpa.product.ProductEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +24,10 @@ public class ProductCategoryEntity {
     private Long id;
     @Column(name = "name")
     private String name;
+    @Column(name = "description")
+    private String description;
+    @Column(name = "image")
+    private String image;
     @CreatedDate
     @Column(name = "created_at")
     private Date createdAt;
@@ -31,7 +36,4 @@ public class ProductCategoryEntity {
     private Date updatedAt;
     @Column(name = "deleted_at")
     private Date deletedAt;
-
-    @ManyToOne
-    private ProductCategoryEntity category;
 }
