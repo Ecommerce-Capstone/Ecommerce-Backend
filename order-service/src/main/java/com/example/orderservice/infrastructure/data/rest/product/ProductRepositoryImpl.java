@@ -34,10 +34,10 @@ public class ProductRepositoryImpl implements ProductRepository {
         RestTemplate restTemplate = new RestTemplate();
         StringBuilder ids = new StringBuilder();
         for (Long i: id){
-            ids.append(String.valueOf(i));
+            ids.append(i);
             ids.append(",");
         }
-        String response = restTemplate.getForObject(PRODUCT_SERVICE_HOST + "/products/mass?ids=" + ids.toString(), String.class);
+        String response = restTemplate.getForObject(PRODUCT_SERVICE_HOST + "/products?ids=" + ids, String.class);
         List<Product> products = null;
         try {
             JSONObject json = new JSONObject(response);
