@@ -27,6 +27,12 @@ public class OrderItemEntity {
     private Long orderId;
     @Column(name = "quantity")
     private Integer quantity;
+    @Column(name = "product_name")
+    private String productName;
+    @Column(name = "product_description")
+    private String productDescription;
+    @Column(name = "product_images")
+    private String productImages;
     @Column(name = "price")
     private Integer price;
     @CreatedDate
