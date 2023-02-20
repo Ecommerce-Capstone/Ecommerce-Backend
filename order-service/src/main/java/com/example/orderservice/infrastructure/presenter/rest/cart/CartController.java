@@ -1,6 +1,7 @@
 package com.example.orderservice.infrastructure.presenter.rest.cart;
 
 import com.example.orderservice.application.cart.entity.Cart;
+import com.example.orderservice.application.cart.entity.ProductCart;
 import com.example.orderservice.application.cart.usecase.CartUseCase;
 import com.example.orderservice.infrastructure.presenter.rest.Response;
 import com.example.orderservice.infrastructure.presenter.rest.authentication.dto.AuthenticatedUser;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,11 +23,16 @@ import java.util.List;
 public class CartController {
     private final CartUseCase cartUseCase;
     @GetMapping
-    public ResponseEntity<Object> getCarts(@RequestParam(required = false) Long userId){
+    public ResponseEntity<Object> getCarts(@RequestParam(required = false) Long userId) throws IOException {
         log.info("GET /cart called");
         Response response = new Response();
-        List<Cart> cart = userId == null ? cartUseCase.getCarts() : cartUseCase.getCarts(userId);
-        response.setData(cart);
+        if (userId == null){
+            List<Cart> carts = cartUseCase.getCarts();
+            response.setData(carts);
+        } else {
+            List<ProductCart> carts = cartUseCase.getProductCarts(userId);
+            response.setData(carts);
+        }
         return response.getResponse();
     }
     @GetMapping(path = "/{id}")
