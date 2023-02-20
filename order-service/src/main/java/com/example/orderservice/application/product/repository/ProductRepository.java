@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ProductRepository {
     List<Product> getProducts(List<Long> id) throws IOException;
+    Product getProduct(Long id);
 }

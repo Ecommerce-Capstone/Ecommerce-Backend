@@ -51,4 +51,22 @@ public class ProductRepositoryImpl implements ProductRepository {
         }
         return products;
     }
+
+    @Override
+    public Product getProduct(Long id) {
+        RestTemplate restTemplate = new RestTemplate();
+        String response = restTemplate.getForObject(PRODUCT_SERVICE_HOST + "/products/" + id.toString(), String.class);
+        Product product = null;
+        try {
+            JSONObject json = new JSONObject(response);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+            product = mapper.readValue(json.getJSONObject("data").toString(), new TypeReference<Product>(){});
+
+        } catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+        }
+        return product;
+    }
 }
