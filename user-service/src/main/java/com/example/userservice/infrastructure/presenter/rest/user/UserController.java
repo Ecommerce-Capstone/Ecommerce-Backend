@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
@@ -49,12 +50,6 @@ public class UserController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<Object> getUser(@PathVariable Long id) throws Exception {
         log.info("GET /users/{} called", id);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        AuthenticatedUser authenticatedUser = (AuthenticatedUser) authentication.getPrincipal();
-        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_customer")) && id != authenticatedUser.getUserId()){
-            throw new ResourceForbiddenException();
-        }
-
         Response response = new Response();
         User user = userUseCase.getUserById(id);
         response.setData(userUseCase.castToUserSafe(user));
@@ -75,12 +70,10 @@ public class UserController {
         log.info("PATCH /users/{} called with body: {}", id, user);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AuthenticatedUser authenticatedUser = (AuthenticatedUser) authentication.getPrincipal();
-        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_customer")) && id != authenticatedUser.getUserId()){
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_customer")) && !Objects.equals(id, authenticatedUser.getUserId())){
             throw new ResourceForbiddenException();
         }
-
         Response response = new Response();
-        user.setRole("customer");
         user = userUseCase.saveUser(id, user);
         response.setData(userUseCase.castToUserSafe(user));
         return response.getResponse();
