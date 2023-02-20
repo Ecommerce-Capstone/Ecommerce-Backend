@@ -11,4 +11,5 @@ public interface CartRepository {
     boolean deleteById(Long id);
 
     void deleteCartsByUserId(Long userId);
+    void deleteCartsByUserIdAndProductId(Long userId, Long productId);
 }

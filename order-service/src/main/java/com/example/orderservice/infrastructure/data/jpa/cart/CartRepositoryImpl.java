@@ -61,6 +61,11 @@ public class CartRepositoryImpl implements CartRepository {
         jpaCartRepository.deleteByUserId(userId);
     }
 
+    @Override
+    public void deleteCartsByUserIdAndProductId(Long userId, Long productId) {
+        jpaCartRepository.deleteByUserIdAndProductId(userId, productId);
+    }
+
     private List<Cart> castCartEntityToCart(List<CartEntity> cartEntities){
         List<Cart> carts = new ArrayList<>();
         for (CartEntity cartEntity : cartEntities){
