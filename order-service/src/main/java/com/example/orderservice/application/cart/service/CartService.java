@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 @Service
 @RequiredArgsConstructor
 
@@ -33,6 +35,9 @@ public class CartService implements CartUseCase {
     @Override
     public List<ProductCart> getProductCarts(Long userId) throws IOException {
         List<Cart> carts = this.getCarts(userId);
+        if (carts.isEmpty()){
+            throw new NoSuchElementException();
+        }
         List<Long> productIds = new ArrayList<>();
         HashMap<Long, Integer> productQuantities = new HashMap<>();
         for (Cart cart: carts){
