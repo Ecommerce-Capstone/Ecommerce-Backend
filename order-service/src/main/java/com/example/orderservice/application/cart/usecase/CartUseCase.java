@@ -1,11 +1,14 @@
 package com.example.orderservice.application.cart.usecase;
 import com.example.orderservice.application.cart.entity.Cart;
+import com.example.orderservice.application.cart.entity.ProductCart;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface CartUseCase {
     List<Cart> getCarts();
     List<Cart> getCarts(Long userId);
+    List<ProductCart> getProductCarts(Long userId) throws IOException;
     Cart getCartById(Long id);
     Cart saveCart(Cart cart);
     Cart saveCart(Long id, Cart cart);
