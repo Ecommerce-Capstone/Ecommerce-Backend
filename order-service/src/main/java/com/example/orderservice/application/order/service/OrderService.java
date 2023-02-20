@@ -13,6 +13,7 @@ import com.example.orderservice.application.product.repository.ProductRepository
 import com.example.orderservice.application.user.entity.User;
 import com.example.orderservice.application.user.repository.UserRepository;
 import com.example.orderservice.event.publisher.OrderEventPublisher;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.ast.Or;
@@ -98,6 +99,7 @@ public class OrderService implements OrderUseCase {
     }
 
     @Override
+    @Transactional
     public Order createOrder(Long userId) throws IOException {
         List<Cart> carts = cartUseCase.getCarts(userId);
         if (carts.isEmpty()){
@@ -116,11 +118,21 @@ public class OrderService implements OrderUseCase {
         List<OrderItem> orderItems = new ArrayList<>();
         for (Product product: products){
             Integer quantity = quantities.get(product.getId());
-            if (quantity != null){
-                OrderItem orderItem = new OrderItem(order.getId(), product.getId(), quantity, product.getPrice());
+            if (quantity != null && product.getStock() > quantity){
+                OrderItem orderItem = new OrderItem();
+                orderItem.setOrderId(order.getId());
+                orderItem.setProductId(product.getId());
+                orderItem.setProductName(product.getName());
+                orderItem.setProductDescription(product.getDescription());
+                orderItem.setProductImages(product.getImages());
+                orderItem.setPrice(product.getPrice());
+                orderItem.setQuantity(quantity);
                 orderItems.add(orderItem);
                 total += quantity * product.getPrice();
             }
+        }
+        if (orderItems.isEmpty()){
+            throw new NoSuchElementException();
         }
 
         orderItemUseCase.saveAll(orderItems);
