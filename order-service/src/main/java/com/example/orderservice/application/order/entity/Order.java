@@ -1,5 +1,6 @@
 package com.example.orderservice.application.order.entity;
 import com.example.orderservice.application.order.type.OrderStatus;
+import com.example.orderservice.application.user.entity.User;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.Date;
 public class Order {
     private Long id;
     private Long userId;
+    private User user;
     private OrderStatus status;
     private Integer total;
     private String paymentUrl;

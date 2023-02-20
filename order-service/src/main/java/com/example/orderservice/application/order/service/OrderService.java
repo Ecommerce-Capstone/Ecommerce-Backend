@@ -10,14 +10,20 @@ import com.example.orderservice.application.orderitem.entity.OrderItem;
 import com.example.orderservice.application.orderitem.usecase.OrderItemUseCase;
 import com.example.orderservice.application.product.entity.Product;
 import com.example.orderservice.application.product.repository.ProductRepository;
+import com.example.orderservice.application.user.entity.User;
+import com.example.orderservice.application.user.repository.UserRepository;
 import com.example.orderservice.event.publisher.OrderEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.client.HttpClientErrorException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,27 +36,65 @@ import java.util.NoSuchElementException;
 public class OrderService implements OrderUseCase {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
     private final CartUseCase cartUseCase;
     private final OrderItemUseCase orderItemUseCase;
     @Autowired
     OrderEventPublisher orderEventPublisher;
     @Override
     public List<Order> getOrders() {
-        return orderRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
+        return this.addUserToOrder(orders);
     }
 
     @Override
     public Page<Order> getOrders(Pageable pageable) {
-        return orderRepository.findAll(pageable);
+        Page<Order> orders = orderRepository.findAll(pageable);
+        List<Order> orderList = this.addUserToOrder(orders.getContent());
+        return new PageImpl<>(orderList, pageable, orders.getTotalElements());
     }
     @Override
     public Page<Order> getOrders(Pageable pageable, Long userId) {
-        return orderRepository.findAll(pageable, userId);
+        Page<Order> orders = orderRepository.findAll(pageable, userId);
+        List<Order> orderList = this.addUserToOrder(orders.getContent());
+        return new PageImpl<>(orderList, pageable, orders.getTotalElements());
+    }
+
+    private List<Order> addUserToOrder(List<Order> orders){
+        try {
+            List<Long> userIds = new ArrayList<>();
+            for (Order order: orders){
+                userIds.add(order.getUserId());
+            }
+            List<User> users = userRepository.getUsers(userIds);
+            for (Order order: orders){
+                for (User user: users){
+                    if (order.getUserId().equals(user.getId())){
+                        order.setUser(user);
+                    }
+                }
+            }
+        } catch (HttpClientErrorException httpClientErrorException){
+            log.error("Failed to get users {}", httpClientErrorException.getStatusCode());
+        } catch (Exception e){
+            log.error("Something happen when get users {}", e.getMessage());
+        }
+        return orders;
     }
 
     @Override
     public Order getOrderById(Long id) {
-        return orderRepository.findById(id);
+        Order order = orderRepository.findById(id);
+        try {
+            User user = userRepository.getUser(order.getUserId());
+            order.setUser(user);
+        } catch (HttpClientErrorException httpClientErrorException){
+            log.error("Failed to get user with id {} : {}", order.getUserId(), httpClientErrorException.getStatusCode());
+        }
+        catch (Exception e){
+            log.error("Something happen when get user with id {} : {}", order.getUserId(), e.getMessage());
+        }
+        return order;
     }
 
     @Override
