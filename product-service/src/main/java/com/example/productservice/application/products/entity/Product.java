@@ -26,6 +26,7 @@ public class Product {
     @NotNull
     @Min(value = 1)
     private Integer stock;
+    private Integer sold;
     private String description;
     @NotEmpty(message = "Product image is required")
     private String images;

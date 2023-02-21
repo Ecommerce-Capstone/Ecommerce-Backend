@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -27,6 +28,8 @@ public class ProductEntity {
     private Integer price;
     @Column(name = "stock")
     private Integer stock;
+    @Column(name = "sold", columnDefinition = "INT default '0'")
+    private Integer sold;
     @Column(name = "description")
     private String description;
     @Column(name = "images")
