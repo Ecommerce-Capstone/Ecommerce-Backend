@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,8 @@ public class OrderEventListener {
     private final OrderItemUseCase orderItemUseCase;
     @Autowired
     private Publisher publisher;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
     @Async
     @EventListener(condition = "@orderPredicate.orderUnpaid(#order.status)")
     void orderCreated(Order order) {
@@ -32,6 +35,7 @@ public class OrderEventListener {
         for (OrderItem orderItem: orderItems){
             publisher.reduceStock(orderItem.getProductId(), orderItem.getQuantity());
         }
+        simpMessagingTemplate.convertAndSend("/i/order-" + order.getId().toString(), order);
     }
 
     @Async
@@ -40,6 +44,7 @@ public class OrderEventListener {
         log.info("Received order PAID event");
         order.setStatus(OrderStatus.PAID);
         orderUseCase.saveOrder(order);
+        simpMessagingTemplate.convertAndSend("/i/order-" + order.getId().toString(), order);
     }
 
     @Async
@@ -48,6 +53,7 @@ public class OrderEventListener {
         log.info("Received order EXPIRED event");
         order.setStatus(OrderStatus.EXPIRED);
         orderUseCase.saveOrder(order);
+        simpMessagingTemplate.convertAndSend("/i/order-" + order.getId().toString(), order);
     }
 
 }

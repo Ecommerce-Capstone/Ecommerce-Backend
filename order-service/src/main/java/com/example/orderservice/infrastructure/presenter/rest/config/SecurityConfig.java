@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(new IpMatcher(SERVICE_IP)).permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/orders/payment/callback").permitAll()
                         .anyRequest().authenticated()
                 )
